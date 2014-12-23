@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'gui.ui'
 #
-# Created: Tue Dec 23 16:33:51 2014
+# Created: Wed Dec 24 06:17:23 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,27 +12,29 @@ from PySide import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(709, 704)
+        MainWindow.resize(794, 627)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.listWidget = QtGui.QListWidget(self.centralwidget)
-        self.listWidget.setGeometry(QtCore.QRect(205, 0, 501, 651))
-        self.listWidget.setObjectName("listWidget")
+        self.gridLayout = QtGui.QGridLayout(self.centralwidget)
+        self.gridLayout.setObjectName("gridLayout")
         self.analyseButton = QtGui.QPushButton(self.centralwidget)
-        self.analyseButton.setGeometry(QtCore.QRect(10, 10, 181, 27))
         self.analyseButton.setObjectName("analyseButton")
-        self.label = QtGui.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(10, 630, 91, 17))
-        self.label.setObjectName("label")
-        self.numOfPoints = QtGui.QLabel(self.centralwidget)
-        self.numOfPoints.setGeometry(QtCore.QRect(130, 630, 56, 17))
-        self.numOfPoints.setObjectName("numOfPoints")
+        self.gridLayout.addWidget(self.analyseButton, 0, 0, 1, 2)
+        self.listWidget = QtGui.QListWidget(self.centralwidget)
+        self.listWidget.setObjectName("listWidget")
+        self.gridLayout.addWidget(self.listWidget, 0, 2, 3, 1)
         self.plotButton = QtGui.QPushButton(self.centralwidget)
-        self.plotButton.setGeometry(QtCore.QRect(10, 50, 181, 27))
         self.plotButton.setObjectName("plotButton")
+        self.gridLayout.addWidget(self.plotButton, 1, 0, 1, 2)
+        self.label = QtGui.QLabel(self.centralwidget)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 2, 0, 1, 1)
+        self.numOfPoints = QtGui.QLabel(self.centralwidget)
+        self.numOfPoints.setObjectName("numOfPoints")
+        self.gridLayout.addWidget(self.numOfPoints, 2, 1, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 709, 27))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 794, 27))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -54,9 +56,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "EXIF Analyser", None, QtGui.QApplication.UnicodeUTF8))
         self.analyseButton.setText(QtGui.QApplication.translate("MainWindow", "Analyse for points of interest", None, QtGui.QApplication.UnicodeUTF8))
+        self.plotButton.setText(QtGui.QApplication.translate("MainWindow", "Plot selected", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainWindow", "Number of pts", None, QtGui.QApplication.UnicodeUTF8))
         self.numOfPoints.setText(QtGui.QApplication.translate("MainWindow", "0", None, QtGui.QApplication.UnicodeUTF8))
-        self.plotButton.setText(QtGui.QApplication.translate("MainWindow", "Plot selected", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoad_Directory.setText(QtGui.QApplication.translate("MainWindow", "Load Directory", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout.setText(QtGui.QApplication.translate("MainWindow", "About", None, QtGui.QApplication.UnicodeUTF8))

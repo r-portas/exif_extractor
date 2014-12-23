@@ -1,10 +1,17 @@
-__author__ = 'Roy Portas'
-__copyright__ = 'Copyright 2014'
-__credits__ = ['Roy Portas']
-__license__ = 'Apache 2.0'
-__date__ = '23/12/2014'
-__version__ = '1.0'
-__email__ = 'royportas@gmail.com'
+#   Copyright 2015 Roy Portas
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
 
 from PIL import Image
 from datetime import datetime
@@ -12,28 +19,42 @@ from PySide import QtGui
 from os import listdir
 from os.path import isfile, join, splitext
 import sys
+import requests
 import webbrowser
+import json
 
 from gui import Ui_MainWindow as mainFrame
 
 tags = {"Date taken": 36867, "GPS data": 34853}
-
+api_key = "" # The api key for google's API
 #TODO: Add social media feeds
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         """Initialised the window"""
+        global api_key
         super(MainWindow, self).__init__()
         self.ui = mainFrame()
         self.ui.setupUi(self)
         self.ui.actionLoad_Directory.triggered.connect(self.load_images)
+        self.ui.actionAbout.triggered.connect(self.show_about)
         self.ui.plotButton.clicked.connect(self.get_selected)
         self.list_widget = self.ui.listWidget
+
+        # Load config file
+        with open('keys.cfg', 'r') as f:
+            raw = f.read()
+            j = json.loads(raw)
+            api_key = j['google-key']
 
         self.images = []
         self.file_types = ['.jpg', '.png']
 
         self.show()
+
+    def show_about(self):
+        QtGui.QMessageBox.about(self, "About EXIF Extractor",
+                                """<p>Copyright (c) 2015 Roy Portas""")
 
     def open_directory(self):
         """Opens a directory to get the filenames of image files"""
@@ -88,12 +109,26 @@ class ImageData:
         self.fname = fname
         self.date = date
         self.location = location
+        self.poi = None
 
     def __repr__(self):
         return "{} - {} - {}".format(self.fname, self.date, self.location)
 
     def __str__(self):
-        return "{} - {}".format(self.date, self.location)
+        if self.poi == None:
+            return "{} - ({:.4f}, {:.4f})".format(self.date, self.location[0], self.location[1])
+        else:
+            return "{} - {} - ({:.4f}, {:.4f})".format(self.poi, self.date, self.location[0], self.location[1])
+
+
+#TODO: Refine this function and implement
+def lookup_location(lat, lon):
+    """Looks up a location via Google Servers"""
+    r = requests.get("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={},{}&rankby=distance&types=establishment&key={}".\
+        format(lat, lon, api_key))
+    j = r.json()
+    print(j['results'][0]['name']) # Should get closest result
+    print(j['results'][0]['vicinity'])
 
 
 def get_exif(filename, name):
