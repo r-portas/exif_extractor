@@ -12,10 +12,13 @@ from PySide import QtGui
 from os import listdir
 from os.path import isfile, join, splitext
 import sys
+import webbrowser
 
 from gui import Ui_MainWindow as mainFrame
 
 tags = {"Date taken": 36867, "GPS data": 34853}
+
+#TODO: Add social media feeds
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
@@ -39,7 +42,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def get_selected(self):
         item = self.list_widget.currentRow()
-        print(self.images[item])
+        lat = self.images[item].location[0]
+        lon = self.images[item].location[1]
+        webbrowser.open_new_tab("http://maps.google.com/?q=loc:{},{}".format(lat, lon))
 
     def load_images(self):
         """Loads the images"""
@@ -71,11 +76,11 @@ class MainWindow(QtGui.QMainWindow):
                 if inserted == 0:
                     self.images.append(image)
 
-
-
-
         for image in self.images:
             self.list_widget.addItem(str(image))
+
+        # Update the image count
+        self.ui.numOfPoints.setText(str(len(self.images)))
 
 
 class ImageData:
@@ -124,6 +129,7 @@ def get_exif(filename, name):
             return None
     except:
         return None
+
 
 def main():
     app = QtGui.QApplication(sys.argv)
