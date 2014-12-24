@@ -18,6 +18,7 @@ from datetime import datetime
 from PySide import QtGui
 from os import listdir
 from os.path import isfile, join, splitext
+from threading import Thread
 import sys
 import requests
 import webbrowser
@@ -29,6 +30,7 @@ tags = {"Date taken": 36867, "GPS data": 34853}
 api_key = "" # The api key for google's API
 #TODO: Add social media feeds
 
+
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         """Initialised the window"""
@@ -39,7 +41,9 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionLoad_Directory.triggered.connect(self.load_images)
         self.ui.actionAbout.triggered.connect(self.show_about)
         self.ui.plotButton.clicked.connect(self.get_selected)
+        self.ui.analyseButton.clicked.connect(self.analyse_images)
         self.list_widget = self.ui.listWidget
+        self.progress_bar = self.ui.progressBar
 
         # Load config file
         with open('keys.cfg', 'r') as f:
@@ -66,6 +70,34 @@ class MainWindow(QtGui.QMainWindow):
         lat = self.images[item].location[0]
         lon = self.images[item].location[1]
         webbrowser.open_new_tab("http://maps.google.com/?q=loc:{},{}".format(lat, lon))
+
+    def analyse_images(self):
+        """Analyses GPS data to determine where the photos were taken"""
+        threads = []
+        for image in self.images:
+            lat = image.location[0]
+            lon = image.location[1]
+            t = Thread(target=self.gps_lookup, args=(lat, lon, image))
+            t.start()
+            threads.append(t)
+
+        stillAlive = 1
+        aliveThreads = 0
+        while stillAlive:
+            aliveThreads = 0
+            for thread in threads:
+                if thread.isAlive() == 1:
+                    aliveThreads += 1
+            prog = aliveThreads / len(threads) * 100
+            self.progress_bar.setValue(prog)
+            if aliveThreads == 0:
+                stillAlive = 0
+
+        self.update_listbox()
+
+    def gps_lookup(self, lat, lon, image):
+        """Used to simplify the threading"""
+        image.poi = lookup_location(lat, lon)
 
     def load_images(self):
         """Loads the images"""
@@ -97,12 +129,15 @@ class MainWindow(QtGui.QMainWindow):
                 if inserted == 0:
                     self.images.append(image)
 
-        for image in self.images:
-            self.list_widget.addItem(str(image))
+        self.update_listbox()
 
         # Update the image count
         self.ui.numOfPoints.setText(str(len(self.images)))
 
+    def update_listbox(self):
+        self.list_widget.clear()
+        for image in self.images:
+            self.list_widget.addItem(str(image))
 
 class ImageData:
     def __init__(self, fname, date, location):
@@ -118,7 +153,8 @@ class ImageData:
         if self.poi == None:
             return "{} - ({:.4f}, {:.4f})".format(self.date, self.location[0], self.location[1])
         else:
-            return "{} - {} - ({:.4f}, {:.4f})".format(self.poi, self.date, self.location[0], self.location[1])
+            return "{} -> {} - {} - ({:.4f}, {:.4f})".format(self.poi[0], self.poi[1], self.date,
+                                                             self.location[0], self.location[1])
 
 
 #TODO: Refine this function and implement
@@ -127,8 +163,11 @@ def lookup_location(lat, lon):
     r = requests.get("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={},{}&rankby=distance&types=establishment&key={}".\
         format(lat, lon, api_key))
     j = r.json()
-    print(j['results'][0]['name']) # Should get closest result
-    print(j['results'][0]['vicinity'])
+    name = j['results'][0]['name'] # Should get closest result
+    address = j['results'][0]['vicinity']
+
+    location = [name, address]
+    return location
 
 
 def get_exif(filename, name):

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'gui.ui'
 #
-# Created: Wed Dec 24 06:17:23 2014
+# Created: Wed Dec 24 10:10:14 2014
 #      by: pyside-uic 0.2.15 running on PySide 1.2.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -19,19 +19,23 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName("gridLayout")
         self.analyseButton = QtGui.QPushButton(self.centralwidget)
         self.analyseButton.setObjectName("analyseButton")
-        self.gridLayout.addWidget(self.analyseButton, 0, 0, 1, 2)
+        self.gridLayout.addWidget(self.analyseButton, 1, 1, 1, 2)
         self.listWidget = QtGui.QListWidget(self.centralwidget)
         self.listWidget.setObjectName("listWidget")
-        self.gridLayout.addWidget(self.listWidget, 0, 2, 3, 1)
-        self.plotButton = QtGui.QPushButton(self.centralwidget)
-        self.plotButton.setObjectName("plotButton")
-        self.gridLayout.addWidget(self.plotButton, 1, 0, 1, 2)
+        self.gridLayout.addWidget(self.listWidget, 1, 3, 6, 1)
         self.label = QtGui.QLabel(self.centralwidget)
         self.label.setObjectName("label")
-        self.gridLayout.addWidget(self.label, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.label, 6, 1, 1, 1)
         self.numOfPoints = QtGui.QLabel(self.centralwidget)
         self.numOfPoints.setObjectName("numOfPoints")
-        self.gridLayout.addWidget(self.numOfPoints, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.numOfPoints, 6, 2, 1, 1)
+        self.progressBar = QtGui.QProgressBar(self.centralwidget)
+        self.progressBar.setProperty("value", 0)
+        self.progressBar.setObjectName("progressBar")
+        self.gridLayout.addWidget(self.progressBar, 7, 1, 1, 2)
+        self.plotButton = QtGui.QPushButton(self.centralwidget)
+        self.plotButton.setObjectName("plotButton")
+        self.gridLayout.addWidget(self.plotButton, 2, 1, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 794, 27))
@@ -56,9 +60,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "EXIF Analyser", None, QtGui.QApplication.UnicodeUTF8))
         self.analyseButton.setText(QtGui.QApplication.translate("MainWindow", "Analyse for points of interest", None, QtGui.QApplication.UnicodeUTF8))
-        self.plotButton.setText(QtGui.QApplication.translate("MainWindow", "Plot selected", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainWindow", "Number of pts", None, QtGui.QApplication.UnicodeUTF8))
         self.numOfPoints.setText(QtGui.QApplication.translate("MainWindow", "0", None, QtGui.QApplication.UnicodeUTF8))
+        self.plotButton.setText(QtGui.QApplication.translate("MainWindow", "Plot selected", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFile.setTitle(QtGui.QApplication.translate("MainWindow", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLoad_Directory.setText(QtGui.QApplication.translate("MainWindow", "Load Directory", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout.setText(QtGui.QApplication.translate("MainWindow", "About", None, QtGui.QApplication.UnicodeUTF8))
