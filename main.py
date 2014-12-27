@@ -81,17 +81,19 @@ class MainWindow(QtGui.QMainWindow):
             t.start()
             threads.append(t)
 
-        stillAlive = 1
-        aliveThreads = 0
-        while stillAlive:
+        if len(threads) != 0:
+
+            stillAlive = 1
             aliveThreads = 0
-            for thread in threads:
-                if thread.isAlive() == 1:
-                    aliveThreads += 1
-            prog = aliveThreads / len(threads) * 100
-            self.progress_bar.setValue(prog)
-            if aliveThreads == 0:
-                stillAlive = 0
+            while stillAlive:
+                aliveThreads = 0
+                for thread in threads:
+                    if thread.isAlive() == 1:
+                        aliveThreads += 1
+                prog = aliveThreads / len(threads) * 100
+                self.progress_bar.setValue(prog)
+                if aliveThreads == 0:
+                    stillAlive = 0
 
         self.update_listbox()
 
@@ -160,14 +162,18 @@ class ImageData:
 #TODO: Refine this function and implement
 def lookup_location(lat, lon):
     """Looks up a location via Google Servers"""
-    r = requests.get("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={},{}&rankby=distance&types=establishment&key={}".\
-        format(lat, lon, api_key))
-    j = r.json()
-    name = j['results'][0]['name'] # Should get closest result
-    address = j['results'][0]['vicinity']
+    try:
+        r = requests.get("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={},{}&rankby=distance&types=establishment&key={}".\
+            format(lat, lon, api_key))
+        j = r.json()
+        name = j['results'][0]['name'] # Should get closest result
+        address = j['results'][0]['vicinity']
 
-    location = [name, address]
-    return location
+        location = [name, address]
+        return location
+    except requests.ConnectionError:
+        pass
+
 
 
 def get_exif(filename, name):
