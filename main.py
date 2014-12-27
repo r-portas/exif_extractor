@@ -46,10 +46,15 @@ class MainWindow(QtGui.QMainWindow):
         self.progress_bar = self.ui.progressBar
 
         # Load config file
-        with open('keys.cfg', 'r') as f:
-            raw = f.read()
-            j = json.loads(raw)
-            api_key = j['google-key']
+        try:
+            with open('keys.cfg', 'r') as f:
+                raw = f.read()
+                j = json.loads(raw)
+                api_key = j['google-key']
+        except IOError:
+            print("Failed to open key file")
+            self.ui.analyseButton.setEnabled(False)
+
 
         self.images = []
         self.file_types = ['.jpg', '.png']
@@ -66,10 +71,14 @@ class MainWindow(QtGui.QMainWindow):
         return dir_name
 
     def get_selected(self):
-        item = self.list_widget.currentRow()
-        lat = self.images[item].location[0]
-        lon = self.images[item].location[1]
-        webbrowser.open_new_tab("http://maps.google.com/?q=loc:{},{}".format(lat, lon))
+        try:
+            item = self.list_widget.currentRow()
+            lat = self.images[item].location[0]
+            lon = self.images[item].location[1]
+            webbrowser.open_new_tab("http://maps.google.com/?q=loc:{},{}".format(lat, lon))
+        except:
+            # Catch in case user hits button without anything loaded
+            pass
 
     def analyse_images(self):
         """Analyses GPS data to determine where the photos were taken"""
@@ -105,15 +114,16 @@ class MainWindow(QtGui.QMainWindow):
         """Loads the images"""
         images = []
         dir_name = self.open_directory()
-        dir_contents = listdir(dir_name)
-        for item in dir_contents:
-            path = join(dir_name, item)
-            if isfile(path):
-                ext = splitext(item)[-1].lower()
-                if ext in self.file_types:
-                    exif = get_exif(path, item)
-                    if exif:
-                        images.append(exif)
+        if dir_name != '':
+            dir_contents = listdir(dir_name)
+            for item in dir_contents:
+                path = join(dir_name, item)
+                if isfile(path):
+                    ext = splitext(item)[-1].lower()
+                    if ext in self.file_types:
+                        exif = get_exif(path, item)
+                        if exif:
+                            images.append(exif)
 
         # Sort the images by date
         self.images = []
